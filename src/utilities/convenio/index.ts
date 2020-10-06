@@ -2,47 +2,54 @@ import { onlyNumbers, isLastChar } from '../../helpers';
 
 export const PARTIALS = [
   {
-    end: 9,
+    end: 10,
     start: 0,
-    index: 9,
+    index: 11,
   },
   {
-    end: 20,
-    start: 10,
-    index: 20,
+    end: 22,
+    start: 12,
+    index: 23,
   },
   {
-    end: 31,
-    start: 21,
-    index: 31,
+    end: 34,
+    start: 24,
+    index: 35,
+  },
+  {
+    end: 46,
+    start: 36,
+    index: 47,
   },
 ];
-// 83640000001-1 33120138000-2 81288462711-6 08013618155-1
+
 export const SLASH_INDEXES = [10, 22, 34, 46];
 
 export const SPACE_INDEXES = [11, 23, 35];
 
 export const LENGTH = 48;
 
-export const CHECK_DIGIT_POSITION = 3;
+export const CHECK_DIGIT_POSITION = 2;
 
+export const MOD_10_INDICATORS = [6, 7];
+export const MOD_11_INDICATORS = [8, 9];
+
+export const MOD_10_WEIGHTS = [2, 1];
 export const MOD_11_WEIGHTS = {
   end: 9,
   initial: 2,
 };
 
-export const MOD_10_WEIGHTS = [2, 1];
-
-export const DIGITABLE_LINE_TO_BOLETO_CONVERT_POSITIONS = [
-  { end: 4, start: 0 },
-  { end: 47, start: 32 },
-  { end: 9, start: 4 },
-  { end: 20, start: 10 },
-  { end: 31, start: 21 },
-];
-
 function isValidLength(digitableLine: string): boolean {
   return digitableLine.length === LENGTH;
+}
+
+function isMod10(digitableLine: string) {
+  return MOD_10_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[CHECK_DIGIT_POSITION]);
+}
+
+function isMod11(digitableLine: string) {
+  return MOD_11_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[CHECK_DIGIT_POSITION]);
 }
 
 function mod10(partial: string): number {
@@ -81,26 +88,13 @@ function mod11(value: string): number {
 }
 
 function isValidPartials(digitableLine: string): boolean {
+  const modFunction = isMod10(digitableLine) ? mod10 : mod11;
+
   return PARTIALS.every(({ start, end, index }) => {
-    const mod = mod10(digitableLine.substring(start, end));
+    const mod = modFunction(digitableLine.substring(start, end));
 
     return +digitableLine[index] === mod;
   });
-}
-
-function parse(digitableLine: string): string {
-  return DIGITABLE_LINE_TO_BOLETO_CONVERT_POSITIONS.reduce(
-    (acc, pos) => acc + digitableLine.substring(pos.start, pos.end),
-    ''
-  );
-}
-
-function isValidCheckDigit(parsedDigitableLine: string): boolean {
-  const mod = mod11(
-    parsedDigitableLine.slice(0, CHECK_DIGIT_POSITION) + parsedDigitableLine.slice(CHECK_DIGIT_POSITION + 1)
-  );
-
-  return +parsedDigitableLine[CHECK_DIGIT_POSITION] === mod;
 }
 
 export function isValid(digitableLine: string): boolean {
@@ -108,13 +102,17 @@ export function isValid(digitableLine: string): boolean {
 
   const digits = onlyNumbers(digitableLine);
 
+  // Convenio always starts with an 8
+  if (+digits[0] !== 8) return false;
+
   if (!isValidLength(digits)) return false;
 
-  if (!isValidPartials(digits)) return false;
+  if (!(isMod10(digits) || isMod11(digits))) return false;
 
-  const parsedDigits = parse(digits);
+  // return isValidPartials(digits);
+  const mod = mod11(digitableLine.substring(start, end));
 
-  return isValidCheckDigit(parsedDigits);
+  return +digitableLine[index] === mod;
 }
 
 export function format(boleto: string) {

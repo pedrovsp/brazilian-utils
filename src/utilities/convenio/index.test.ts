@@ -1,4 +1,4 @@
-import { format, LENGTH } from '.';
+import { isValid, format, LENGTH } from '.';
 // 83640000001-1 33120138000-2 81288462711-6 08013618155-1
 describe('format', () => {
   test('should format convenio with mask', () => {
@@ -90,5 +90,60 @@ describe('format', () => {
   test('should return an empty string when receive an empty string', () => {
     expect(format('')).toBe('');
     expect(format('')).toBe('');
+  });
+});
+
+describe('isValid', () => {
+  describe('should return false', () => {
+    test('when is a empty string', () => {
+      expect(isValid('')).toBe(false);
+    });
+
+    test('when is null', () => {
+      expect(isValid(null as any)).toBe(false);
+    });
+
+    test('when is undefined', () => {
+      expect(isValid(undefined as any)).toBe(false);
+    });
+
+    test(`when length is less than ${LENGTH}`, () => {
+      expect(isValid('123456789')).toBe(false);
+    });
+
+    test('when is array', () => {
+      expect(isValid([] as any)).toBe(false);
+    });
+
+    test('when is object', () => {
+      expect(isValid({} as any)).toBe(false);
+    });
+
+    test('when is boolean', () => {
+      expect(isValid(true as any)).toBe(false);
+      expect(isValid(false as any)).toBe(false);
+    });
+  });
+
+  describe('should return true', () => {
+    test('when is a covenio valid without mask', () => {
+      expect(isValid('836500000011331201380002812884627116080136181551')).toBe(true);
+    });
+
+    test('when is a covenio valid with mask', () => {
+      expect(isValid('83650000004-4 22860138000-6 46857253911-1 08050322794-6')).toBe(true);
+    });
+  });
+
+  describe('should check mod validity', () => {
+    test('whether mod10 digit is valid', () => {
+      expect(isValid('836400000011331201380002812884627116080136181551')).toBe(true);
+      expect(isValid('836400008011331201380002812884627116080136181551')).toBe(false);
+    });
+
+    test('whether mod11 digit is valid', () => {
+      expect(isValid('858900004609524601791605607593050865831483000010')).toBe(true);
+      expect(isValid('858900008609524601791605607593050865831483000010')).toBe(false);
+    });
   });
 });
