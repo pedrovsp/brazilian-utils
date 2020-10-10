@@ -123,27 +123,19 @@ describe('isValid', () => {
       expect(isValid(true as any)).toBe(false);
       expect(isValid(false as any)).toBe(false);
     });
+
+    test('when is a covenio length is invalid', () => {
+      expect(isValid('8364000001-1 51240138000-5 92741588911-6 00076420421-0')).toBe(false);
+    });
   });
 
   describe('should return true', () => {
     test('when is a covenio valid without mask', () => {
-      expect(isValid('836500000011331201380002812884627116080136181551')).toBe(true);
+      expect(isValid('836400000011512401380005927415889116000764204210')).toBe(true);
     });
 
     test('when is a covenio valid with mask', () => {
-      expect(isValid('83650000004-4 22860138000-6 46857253911-1 08050322794-6')).toBe(true);
-    });
-  });
-
-  describe('should check mod validity', () => {
-    test('whether mod10 digit is valid', () => {
-      expect(isValid('836400000011331201380002812884627116080136181551')).toBe(true);
-      expect(isValid('836400008011331201380002812884627116080136181551')).toBe(false);
-    });
-
-    test('whether mod11 digit is valid', () => {
-      expect(isValid('858900004609524601791605607593050865831483000010')).toBe(true);
-      expect(isValid('858900008609524601791605607593050865831483000010')).toBe(false);
+      expect(isValid('83640000001-1 51240138000-5 92741588911-6 00076420421-0')).toBe(true);
     });
   });
 });

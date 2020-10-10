@@ -29,7 +29,10 @@ export const SPACE_INDEXES = [11, 23, 35];
 
 export const LENGTH = 48;
 
-export const CHECK_DIGIT_POSITION = 2;
+// DIGIT THAT DETERMINES WHICH MOD FUNCTION WILL BE USED
+export const VALUE_DIGIT_POSITION = 2;
+// CHECK DIGIT THAT MUST MATCH THE MOD RESULT
+export const CHECK_DIGIT_POSITION = 3;
 
 export const MOD_10_INDICATORS = [6, 7];
 export const MOD_11_INDICATORS = [8, 9];
@@ -45,11 +48,11 @@ function isValidLength(digitableLine: string): boolean {
 }
 
 function isMod10(digitableLine: string) {
-  return MOD_10_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[CHECK_DIGIT_POSITION]);
+  return MOD_10_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[VALUE_DIGIT_POSITION]);
 }
 
 function isMod11(digitableLine: string) {
-  return MOD_11_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[CHECK_DIGIT_POSITION]);
+  return MOD_11_INDICATORS.some((indicator) => indicator === +digitableLine.split('')[VALUE_DIGIT_POSITION]);
 }
 
 function mod10(partial: string): number {
@@ -87,14 +90,23 @@ function mod11(value: string): number {
   return mod === 0 || mod === 1 ? 1 : 11 - mod;
 }
 
-function isValidPartials(digitableLine: string): boolean {
-  const modFunction = isMod10(digitableLine) ? mod10 : mod11;
-
-  return PARTIALS.every(({ start, end, index }) => {
-    const mod = modFunction(digitableLine.substring(start, end));
+function isValidPartials(digitableLine: string, modFunction: Function): boolean {
+  return PARTIALS.every(({ start, index }) => {
+    const mod = modFunction(digitableLine.substring(start, index));
 
     return +digitableLine[index] === mod;
   });
+}
+
+export function digitableLineToBarcode(digitableLine: string): string {
+  let barcode: string[] = [];
+  PARTIALS.forEach(({ start, index }) => {
+    barcode = barcode.concat(digitableLine.substring(start, index).split(''));
+  });
+
+  barcode.splice(CHECK_DIGIT_POSITION, 1);
+
+  return barcode.join('');
 }
 
 export function isValid(digitableLine: string): boolean {
@@ -107,12 +119,16 @@ export function isValid(digitableLine: string): boolean {
 
   if (!isValidLength(digits)) return false;
 
-  if (!(isMod10(digits) || isMod11(digits))) return false;
+  let modFunction;
+  if (isMod10(digits)) modFunction = mod10;
+  else if (isMod11(digits)) modFunction = mod11;
+  else return false;
 
-  // return isValidPartials(digits);
-  const mod = mod11(digitableLine.substring(start, end));
+  if (!isValidPartials(digits, modFunction)) return false;
 
-  return +digitableLine[index] === mod;
+  const barcode = digitableLineToBarcode(digits);
+
+  return modFunction(barcode) === +digitableLine.substr(CHECK_DIGIT_POSITION, 1);
 }
 
 export function format(boleto: string) {
