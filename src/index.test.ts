@@ -29,6 +29,8 @@ describe('Public API', () => {
     'capitalize',
     'formatCurrency',
     'parseCurrency',
+    'mod10',
+    'mod11',
   ];
 
   Object.keys(API).forEach((method) => {

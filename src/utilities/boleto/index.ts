@@ -1,4 +1,4 @@
-import { onlyNumbers, isLastChar } from '../../helpers';
+import { onlyNumbers, isLastChar, mod10, mod11 } from '../../helpers';
 
 export const PARTIALS = [
   {
@@ -26,13 +26,6 @@ export const LENGTH = 47;
 
 export const CHECK_DIGIT_POSITION = 4;
 
-export const MOD_11_WEIGHTS = {
-  end: 9,
-  initial: 2,
-};
-
-export const MOD_10_WEIGHTS = [2, 1];
-
 export const DIGITABLE_LINE_TO_BOLETO_CONVERT_POSITIONS = [
   { end: 4, start: 0 },
   { end: 47, start: 32 },
@@ -43,41 +36,6 @@ export const DIGITABLE_LINE_TO_BOLETO_CONVERT_POSITIONS = [
 
 function isValidLength(digitableLine: string): boolean {
   return digitableLine.length === LENGTH;
-}
-
-function mod10(partial: string): number {
-  const sum = partial
-    .split('')
-    .reverse()
-    .reduce((acc, digit, index) => {
-      const result = parseInt(digit, 10) * MOD_10_WEIGHTS[index % 2];
-
-      return acc + (result > 9 ? 1 + (result % 10) : result);
-    }, 0);
-
-  const mod = sum % 10;
-
-  return mod > 0 ? 10 - mod : 0;
-}
-
-function mod11(value: string): number {
-  const { initial, end } = MOD_11_WEIGHTS;
-
-  let weight = initial;
-
-  const sum = value
-    .split('')
-    .reverse()
-    .reduce((acc, digit) => {
-      const result = parseInt(digit, 10) * weight;
-      weight = weight < end ? weight + 1 : initial;
-
-      return acc + result;
-    }, 0);
-
-  const mod = sum % 11;
-
-  return mod === 0 || mod === 1 ? 1 : 11 - mod;
 }
 
 function isValidPartials(digitableLine: string): boolean {
