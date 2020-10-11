@@ -64,6 +64,36 @@ import { isValidBoleto } from '@brazilian-utils/brazilian-utils';
 isValidBoleto('00190000090114971860168524522114675860000102656'); // true
 ```
 
+## formatBoleto
+
+Formats string or number value into string matching boleto ([brazilian payment method](https://en.wikipedia.org/wiki/Boleto)) pattern.
+
+```javascript
+import { formatBoleto } from '@brazilian-utils/brazilian-utils';
+
+formatBoleto('10491443385511900000200000000141325230000093423'); // 10491.44338 55119.000002 00000.000141 3 25230000093423
+```
+
+## isValidConvenio
+
+Check if convenio (brazilian payment method) is valid according to [FEBRABAN definitions](https://cmsportal.febraban.org.br/Arquivos/documentos/PDF/Layout%20-%20C%C3%B3digo%20de%20Barras%20-%20Vers%C3%A3o%205%20-%2001_08_2016.pdf).
+
+```javascript
+import { isValidConvenio } from '@brazilian-utils/brazilian-utils';
+
+isValidConvenio('836400000011512401380005927415889116000764204210'); // true
+```
+
+## formatConvenio
+
+Formats string or number value into convenio pattern according to [FEBRABAN definitions](https://cmsportal.febraban.org.br/Arquivos/documentos/PDF/Layout%20-%20C%C3%B3digo%20de%20Barras%20-%20Vers%C3%A3o%205%20-%2001_08_2016.pdf).
+
+```javascript
+import { formatConvenio } from '@brazilian-utils/brazilian-utils';
+
+formatConvenio('836400000011512401380005927415889116000764204210'); // '83640000001-1 51240138000-5 92741588911-6 00076420421-0'
+```
+
 ## isValidEmail
 
 Check if email is valid.
