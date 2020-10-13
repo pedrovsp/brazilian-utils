@@ -94,6 +94,41 @@ import { formatConvenio } from '@brazilian-utils/brazilian-utils';
 formatConvenio('836400000011512401380005927415889116000764204210'); // '83640000001-1 51240138000-5 92741588911-6 00076420421-0'
 ```
 
+## isValidPaymentBarcode
+
+Check if the payment barcode is a valid boleto or convênio.
+
+```javascript
+import { isValidPaymentBarcode } from '@brazilian-utils/brazilian-utils';
+
+isValidPaymentBarcode('0019000009 01149.718601 68524.522114 6 75860000102656'); // true
+isValidPaymentBarcode('83640000001-1 51240138000-5 92741588911-6 00076420421-0'); // true
+```
+
+## formatPaymentBarcode
+
+Formats string or number value in the pattern of a boleto or a convênio.
+
+```javascript
+import { formatPaymentBarcode } from '@brazilian-utils/brazilian-utils';
+
+formatPaymentBarcode('00190000090114971860168524522114675860000102656'); // '0019000009 01149.718601 68524.522114 6 75860000102656'
+formatPaymentBarcode('836400000011512401380005927415889116000764204210'); // '83640000001-1 51240138000-5 92741588911-6 00076420421-0'
+```
+
+## identifyPaymentBarcode
+
+Identify whether the input value is a boleto or a convenio.
+
+```javascript
+import { identifyPaymentBarcode } from '@brazilian-utils/brazilian-utils';
+
+identifyPaymentBarcode('0019000009 01149.718601 68524.522114 6 75860000102656'); // BOLETO
+identifyPaymentBarcode('83640000001-1 51240138000-5 92741588911-6 00076420421-0'); // CONVENIO
+identifyPaymentBarcode('00190000090114971860168524522114675860000102656'); // BOLETO
+identifyPaymentBarcode('836400000011512401380005927415889116000764204210'); // CONVENIO
+```
+
 ## isValidEmail
 
 Check if email is valid.
